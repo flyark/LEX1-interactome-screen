@@ -120,7 +120,7 @@ a{color:var(--accent)}
 <body>
 <div class="wrap">
   <h1>LEX-1 Interactome AlphaFold-Multimer Screen</h1>
-  <p class="sub">AlphaFold-Multimer predictions between <em>C.&nbsp;elegans</em> LEX-1 and 358 germline-expressed proteins co-purified with LEX-1::3xFLAG by immunoprecipitation&ndash;mass spectrometry (complexes &le;&thinsp;2,000 amino acids; 5 models per pair).<br>Scored with <strong>iLIS</strong> (integrated Local Interaction Score; <strong>best</strong> = highest-iLIS model of 5, <strong>avg</strong> = mean across all 5; FPR thresholds from <a href="https://doi.org/10.64898/2026.04.14.718529" target="_blank" rel="noopener">Kim et al., 2026</a>).<br>Every pair opens in <a href="https://flyark.github.io/LIVIA" target="_blank" rel="noopener">LIVIA</a> with per-model scores and predicted interaction residues; full 3D structures and PAE maps are included for pairs at or above the 10&thinsp;% FPR cutoff on <strong>iLIS best</strong> (&ge;&thinsp;0.223).</p>
+  <p class="sub">AlphaFold-Multimer predictions between <em>C.&nbsp;elegans</em> LEX-1 and 358 germline-expressed proteins co-purified with LEX-1::3xFLAG by immunoprecipitation&ndash;mass spectrometry (complexes &le;&thinsp;2,000 amino acids; 5 models per pair).<br><strong>best</strong> = highest-iLIS model of 5 &middot; <strong>avg</strong> = mean across all 5 (FPR thresholds from <a href="https://doi.org/10.64898/2026.04.14.718529" target="_blank" rel="noopener">Kim et al., 2026</a>).</p>
 
   <div class="bar">
     <div class="tabs" id="tabs"></div>
@@ -155,8 +155,8 @@ a{color:var(--accent)}
   <details class="howto">
     <summary>How to read this table</summary>
     <div class="body">
-      <strong>Coverage</strong> &mdash; every predicted pair is listed, not only the ones that pass.
-      Every pair opens in <a href="https://flyark.github.io/LIVIA" target="_blank" rel="noopener">LIVIA</a>: <strong>LIVIA (3D) &#8599;</strong> for pairs at or above the 10&thinsp;% FPR cutoff (all five 3D models, PAE maps, contact maps, and per-model scores), <strong>LIVIA (residues) &#8599;</strong> for below-cutoff pairs with predicted interface residues (LIR/cLIR), and <strong>LIVIA (scores) &#8599;</strong> for pairs with no predicted interface.<br>
+      <strong>Coverage</strong> &mdash; all 358 predicted pairs are included (the table opens at the 10&thinsp;% FPR cutoff; switch <strong>iLIS best cutoff</strong> to <em>All predictions</em> to browse the full screen).<br>
+      <strong>Interface</strong> &mdash; every pair opens in <a href="https://flyark.github.io/LIVIA" target="_blank" rel="noopener">LIVIA</a> (<a href="https://doi.org/10.64898/2026.05.01.721633" target="_blank" rel="noopener">Kim &amp; Perrimon, 2026</a>): <strong>LIVIA (3D) &#8599;</strong> for pairs at or above the 10&thinsp;% FPR cutoff (all five 3D models, PAE maps, contact maps, and per-model scores), <strong>LIVIA (residues) &#8599;</strong> for below-cutoff pairs with predicted interface residues (LIR/cLIR), and <strong>LIVIA (scores) &#8599;</strong> for pairs with no predicted interface.<br>
       <strong>Scores</strong> &mdash; iLIS from <a href="https://github.com/flyark/AFM-LIS" target="_blank" rel="noopener">AFM-LIS</a> (<a href="https://doi.org/10.64898/2026.04.14.718529" target="_blank" rel="noopener">Kim et al., 2026</a>); false-positive rate (FPR) thresholds were calibrated against large-scale Y2H reference sets in yeast, fly, and human.<br>
       <a href="data/interactions.csv" download>Download all 358 predictions (CSV)</a> &middot;
       <a href="https://github.com/flyark/LEX1-interactome-screen" target="_blank" rel="noopener">Source</a> &middot;
