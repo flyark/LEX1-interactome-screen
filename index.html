@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LEX-1 Interactome AlphaFold-Multimer Screen</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='5' cy='6' r='3' fill='%232a78d6'/><circle cx='11' cy='10' r='3' fill='%23eb6834'/></svg>">
+<style>
+:root{
+  color-scheme: light;
+  --surface-0:#f6f6f4; --surface-1:#fcfcfb; --surface-2:#efefec;
+  --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#77766f;
+  --border:#dcdcd6; --border-strong:#c2c2ba; --accent:#2a78d6;
+  /* iLIS FPR bands — LIVIA's hues, stepped to clear WCAG 4.5:1 on this surface */
+  --fpr1:#6B21A8; --fpr5:#0a6b55; --fpr10:#8a6200; --fprno:#6b7280;
+}
+@media (prefers-color-scheme: dark){ :root:where(:not([data-theme="light"])){
+  color-scheme: dark;
+  --surface-0:#121211; --surface-1:#1a1a19; --surface-2:#242422;
+  --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#8e8d84;
+  --border:#33332f; --border-strong:#4a4a45; --accent:#3987e5;
+  --fpr1:#c58af9; --fpr5:#2fbf9b; --fpr10:#e0a72c; --fprno:#9b9a92;
+}}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --surface-0:#121211; --surface-1:#1a1a19; --surface-2:#242422;
+  --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#8e8d84;
+  --border:#33332f; --border-strong:#4a4a45; --accent:#3987e5;
+  --fpr1:#c58af9; --fpr5:#2fbf9b; --fpr10:#e0a72c; --fprno:#9b9a92;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-0);color:var(--text-primary);
+  font:14px/1.5 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:22px 22px 48px}
+h1{font-size:20px;margin:0 0 3px;letter-spacing:-.01em}
+.sub{color:var(--text-secondary);font-size:13px;margin:0 0 16px}
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{padding:6px 14px;border:1px solid var(--border);background:var(--surface-1);color:var(--text-secondary);
+  border-radius:7px;cursor:pointer;font-size:13.5px;font-weight:500;font-family:inherit}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab .n{opacity:.65;font-weight:400;margin-left:5px;font-variant-numeric:tabular-nums}
+label.f{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-secondary)}
+select,input[type=search]{padding:6px 9px;border:1px solid var(--border-strong);border-radius:7px;
+  background:var(--surface-1);color:var(--text-primary);font-size:13px;font-family:inherit}
+input[type=search]{width:170px}
+.count{color:var(--text-secondary);font-size:13px;font-variant-numeric:tabular-nums}
+/* Count and download travel together, so the button never wraps onto a line of its own. */
+.right{margin-left:auto;display:flex;align-items:center;gap:11px}
+/* The footer carries the same link, but few readers scroll a long table to the end. */
+.dl{padding:6px 11px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface-1);
+  color:var(--text-secondary);text-decoration:none;font-size:12.5px;font-weight:500;white-space:nowrap}
+.dl:hover{border-color:var(--accent);color:var(--accent)}
+.card{background:var(--surface-1);border:1px solid var(--border);border-radius:11px;overflow:hidden}
+/* Cells are nowrap, so on a phone the table is wider than the card. Without this scroller the
+   card's overflow:hidden clips the right-hand columns and there is no way to reach them. */
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 12px;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap}
+th{position:sticky;top:0;background:var(--surface-2);cursor:pointer;font-weight:600;
+  color:var(--text-secondary);z-index:1;user-select:none;font-size:12.5px}
+th .ar{opacity:.35;font-size:10px;margin-left:3px}
+th[aria-sort] .ar{opacity:1;color:var(--accent)}
+td.num{font-variant-numeric:tabular-nums}
+td.ilis{font-weight:700}
+.b1{color:var(--fpr1)} .b5{color:var(--fpr5)} .b10{color:var(--fpr10)} .b0{color:var(--fprno)}
+.key{display:inline-flex;align-items:center;gap:5px;margin-right:13px}
+.sw{width:9px;height:9px;border-radius:2px}
+.bands{display:flex;align-items:center;flex-wrap:wrap;gap:4px 18px;padding:9px 13px;margin-bottom:10px;
+  background:var(--surface-1);border:1px solid var(--border);border-radius:9px;font-size:12px;color:var(--text-secondary)}
+.bands .key{font-weight:600;margin-right:0}
+.bnote{color:var(--text-muted);font-weight:400;margin-left:2px}
+td.gene{font-weight:600}
+td.evi{color:var(--text-secondary)}
+.badge{display:inline-block;padding:1px 7px;border-radius:99px;font-size:11.5px;font-weight:600;
+  background:var(--surface-2);border:1px solid var(--border-strong);color:var(--text-secondary)}
+/* cLIP hand-off: one button per bait, straight into LIVIA's clustering view. */
+.clip{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;padding:11px 13px;margin-bottom:10px;
+  background:var(--surface-1);border:1px solid var(--border);border-radius:9px;font-size:12.5px;
+  color:var(--text-secondary)}
+.clip b{color:var(--text-primary);font-weight:600}
+.clip .go{display:inline-block;padding:5px 13px;border-radius:7px;background:var(--accent);color:#fff;
+  text-decoration:none;font-weight:600;font-size:13px}
+.clip .go:hover{filter:brightness(1.08)}
+tbody tr:hover{background:var(--surface-2)}
+tr.neg td.gene{font-weight:500;color:var(--text-secondary)}
+.grp{color:var(--text-muted);font-size:12px}
+body.one-screen #tabs,body.one-screen .col-screen{display:none}
+.dash{color:var(--text-muted)}
+a{color:var(--accent)}
+.foot{margin-top:20px;color:var(--text-muted);font-size:12px;line-height:1.7}
+/* How-to-read sits above the table, where it is actually read, but collapsed so it costs one line.
+   Putting it in the footer meant nobody scrolling a long table ever saw it. */
+.howto{background:var(--surface-1);border:1px solid var(--border);border-radius:9px;
+  margin-bottom:10px;font-size:12px;color:var(--text-secondary)}
+.howto>summary{padding:9px 13px;cursor:pointer;font-weight:600;list-style:none}
+.howto>summary::-webkit-details-marker{display:none}
+.howto>summary::before{content:"\25B8\00a0"}
+.howto[open]>summary::before{content:"\25BE\00a0"}
+.howto>summary:hover{color:var(--accent)}
+.howto .body{padding:0 13px 11px;line-height:1.75}
+.empty{padding:34px;text-align:center;color:var(--text-muted)}
+@media (max-width:760px){
+  .wrap{padding:16px 12px 40px}
+  th,td{padding:7px 8px}
+  .hide-s{display:none}
+  /* Long option text must not push the controls wider than the viewport. */
+  label.f{min-width:0} select{min-width:0;max-width:100%}
+  input[type=search]{width:100%}
+  /* Pin Structure to the right edge so the LIVIA link is tappable without swiping first. */
+  th.stk,td.stk{position:sticky;right:0;background:var(--surface-1);
+    border-left:1px solid var(--border)}
+  td.stk{z-index:1}
+  th.stk{background:var(--surface-2);z-index:2}
+  tbody tr:hover td.stk{background:var(--surface-2)}
+  td.stk a{display:block;padding:4px 2px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>LEX-1 Interactome AlphaFold-Multimer Screen</h1>
+  <p class="sub">AlphaFold-Multimer predictions between <em>C.&nbsp;elegans</em> LEX-1 and 358 germline-expressed proteins co-purified with LEX-1::3xFLAG by immunoprecipitation&ndash;mass spectrometry (complexes &le;&thinsp;2,000 amino acids; 5 models per pair).<br>Scored with <strong>iLIS</strong> (integrated Local Interaction Score; <strong>best</strong> = highest-iLIS model of 5, <strong>avg</strong> = mean across all 5; FPR thresholds from <a href="https://doi.org/10.64898/2026.04.14.718529" target="_blank" rel="noopener">Kim et al., 2026</a>).<br>Every pair opens in <a href="https://flyark.github.io/LIVIA" target="_blank" rel="noopener">LIVIA</a> with per-model scores and predicted interaction residues; full 3D structures and PAE maps are included for pairs at or above the 10&thinsp;% FPR cutoff on <strong>iLIS best</strong> (&ge;&thinsp;0.223).</p>
+
+  <div class="bar">
+    <div class="tabs" id="tabs"></div>
+    <label class="f">iLIS best cutoff
+      <select id="cut">
+        <option value="0.551">1&thinsp;% FPR &mdash; iLIS best &ge; 0.551</option>
+        <option value="0.339">5&thinsp;% FPR &mdash; iLIS best &ge; 0.339</option>
+        <option value="0.223" selected>10&thinsp;% FPR &mdash; iLIS best &ge; 0.223</option>
+        <option value="0">All predictions</option>
+      </select>
+    </label>
+    <input type="search" id="q" placeholder="Filter by protein" autocomplete="off" aria-label="Filter by protein">
+    <span class="right">
+      <span class="count" id="count"></span>
+      <a class="dl" href="data/interactions.csv" download title="Every predicted pair with its scores">&#8595; CSV</a>
+    </span>
+  </div>
+
+  <div class="clip"><span><b>Interaction fingerprint</b> &mdash; per-residue contact frequency along the LEX-1 sequence, with partners clustered by contact profile alongside the AlphaFold pLDDT and protein domain tracks. Opens in <b>clustered Local Interaction Profile-View (cLIP-View)</b>, part of LIVIA.</span><a class="go" href="https://flyark.github.io/LIVIA/clip.html?data=https%3A%2F%2Fflyark.github.io%2FLEX1-interactome-screen%2Fclip%2FLEX-1.zip&gene=LEX-1&species=6239&ilis=0.223" target="_blank" rel="noopener">LEX-1 interaction fingerprint &#8599;</a></div>
+
+  <div class="bands">
+    <span class="key"><span class="sw" style="background:var(--fpr1)"></span>1&thinsp;% FPR
+      <span class="bnote">(iLIS best &ge; 0.551, iLIS avg &ge; 0.303)</span></span>
+    <span class="key"><span class="sw" style="background:var(--fpr5)"></span>5&thinsp;% FPR
+      <span class="bnote">(iLIS best &ge; 0.339, iLIS avg &ge; 0.120)</span></span>
+    <span class="key"><span class="sw" style="background:var(--fpr10)"></span>10&thinsp;% FPR
+      <span class="bnote">(iLIS best &ge; 0.223, iLIS avg &ge; 0.073)</span></span>
+    <span class="key"><span class="sw" style="background:var(--fprno)"></span>below threshold</span>
+    <span class="bnote" style="margin-left:auto">FPR benchmarks: <a href="https://doi.org/10.64898/2026.04.14.718529" target="_blank" rel="noopener">Kim et al., 2026</a></span>
+  </div>
+
+  <details class="howto">
+    <summary>How to read this table</summary>
+    <div class="body">
+      <strong>Coverage</strong> &mdash; every predicted pair is listed, not only the ones that pass.
+      Every pair opens in <a href="https://flyark.github.io/LIVIA" target="_blank" rel="noopener">LIVIA</a>: <strong>LIVIA (3D) &#8599;</strong> for pairs at or above the 10&thinsp;% FPR cutoff (all five 3D models, PAE maps, contact maps, and per-model scores), <strong>LIVIA (residues) &#8599;</strong> for below-cutoff pairs with predicted interface residues (LIR/cLIR), and <strong>LIVIA (scores) &#8599;</strong> for pairs with no predicted interface.<br>
+      <strong>Scores</strong> &mdash; iLIS from <a href="https://github.com/flyark/AFM-LIS" target="_blank" rel="noopener">AFM-LIS</a> (<a href="https://doi.org/10.64898/2026.04.14.718529" target="_blank" rel="noopener">Kim et al., 2026</a>); false-positive rate (FPR) thresholds were calibrated against large-scale Y2H reference sets in yeast, fly, and human.<br>
+      <a href="data/interactions.csv" download>Download all 358 predictions (CSV)</a> &middot;
+      <a href="https://github.com/flyark/LEX1-interactome-screen" target="_blank" rel="noopener">Source</a> &middot;
+    <a href="https://flyark.github.io/LIVIA" target="_blank" rel="noopener">LIVIA</a> &middot;
+    <a href="https://github.com/flyark/AFM-LIS" target="_blank" rel="noopener">AFM-LIS</a>
+    </div>
+  </details>
+
+  <div class="card">
+    <div class="scroll">
+    <table id="tbl">
+      <thead><tr>
+        <th data-k="screen" class="hide-s col-screen">Screen <span class="ar">&#8645;</span></th>
+        <th data-k="protein_1">Protein 1 <span class="ar">&#8645;</span></th>
+        <th data-k="protein_2">Protein 2 <span class="ar">&#8645;</span></th>
+        <th data-k="iLIS_best" class="num">iLIS best <span class="ar">&#8645;</span></th>
+        <th data-k="iLIS_avg"  class="num">iLIS avg <span class="ar">&#8645;</span></th>
+        <th data-k="ipTM_best" class="num">ipTM best <span class="ar">&#8645;</span></th>
+        <th data-k="ipTM_avg"  class="num">ipTM avg <span class="ar">&#8645;</span></th>
+        <th class="stk">Interface</th>
+      </tr></thead>
+      <tbody><tr><td colspan="8" class="empty">Loading&hellip;</td></tr></tbody>
+    </table>
+    </div>
+  </div>
+
+  <p class="foot">
+    <a href="data/interactions.csv" download>Download all 358 predictions (CSV)</a> &middot;
+    <a href="https://github.com/flyark/LEX1-interactome-screen" target="_blank" rel="noopener">Source</a> &middot;
+    <a href="https://flyark.github.io/LIVIA" target="_blank" rel="noopener">LIVIA</a> &middot;
+    <a href="https://github.com/flyark/AFM-LIS" target="_blank" rel="noopener">AFM-LIS</a>
+  </p>
+</div>
+
+<script>
+const BUNDLES='https://flyark.github.io/LEX1-interactome-screen/bundles/';
+const LIVIA='https://flyark.github.io/LIVIA/universal.html';
+const SCREENS=["LEX-1"];
+const NUM=new Set(['iLIS_best','iLIS_avg','ipTM_best','ipTM_avg']);
+const EXTRA=[];
+let ROWS=[], screen_='all', cut=0.223, q='', sortK='iLIS_best', sortAsc=false;
+
+function parseCSV(t){
+  const out=[]; let row=[],cur='',qq=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(qq){ if(c==='"'){ if(t[i+1]==='"'){cur+='"';i++;} else qq=false; } else cur+=c; }
+    else if(c==='"') qq=true;
+    else if(c===','){row.push(cur);cur='';}
+    else if(c==='\n'){row.push(cur);out.push(row);row=[];cur='';}
+    else if(c!=='\r') cur+=c;}
+  if(cur.length||row.length){row.push(cur);out.push(row);}
+  const h=out.shift();
+  return out.filter(r=>r.length===h.length).map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]])));
+}
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// Cutoffs use the published rounding convention (a value rounding to 0.339 counts at 5% FPR),
+// expressed as v >= cut - EPS rather than actually rounding: numpy round-half-to-even and JS
+// Math.round half-up disagree on .5 cases. Same form as screen_site_config.at_or_above().
+const EPS=0.0005, ge = (v,c) => v >= c - EPS - 1e-9;
+const passCut = r => ge(r.iLIS_best, cut);
+// FPR bands, same thresholds and hue order LIVIA uses (purple 1% → green 5% → amber 10% → gray below)
+const bandBest = v => ge(v,0.551)?'b1' : ge(v,0.339)?'b5' : ge(v,0.223)?'b10' : 'b0';
+const bandAvg  = v => ge(v,0.303)?'b1' : ge(v,0.120)?'b5' : ge(v,0.073)?'b10' : 'b0';
+const matchQ = (r,n) => !n || r.protein_1.toUpperCase().includes(n) || r.protein_2.toUpperCase().includes(n);
+const extraCells = r => EXTRA.map(c => {
+  const v = r[c.key] || '';
+  return `<td class="evi">${v ? `<span class="badge" title="${esc(c.title||'')}">${esc(v)}</span>`
+                              : '<span class="dash">&mdash;</span>'}</td>`;
+}).join('');
+
+function view(){
+  const n=q.trim().toUpperCase();
+  return ROWS.filter(r=>(screen_==='all'||r.screen===screen_) && passCut(r) && matchQ(r,n))
+    .sort((a,b)=>{
+      const v = NUM.has(sortK) ? a[sortK]-b[sortK] : String(a[sortK]).localeCompare(String(b[sortK]));
+      return sortAsc? v : -v;
+    });
+}
+function render(){
+  const rows=view(), n=q.trim().toUpperCase();
+  const shown=ROWS.filter(r=>passCut(r)&&matchQ(r,n)).length;
+  document.getElementById('count').textContent =
+    `${rows.length.toLocaleString()} of ${ROWS.length.toLocaleString()} predictions`;
+  document.querySelector('#tbl tbody').innerHTML = rows.length ? rows.map(r=>{
+    const _txt = r.positive ? 'LIVIA (3D) &#8599;' : (r.iLIS_best > 0 ? 'LIVIA (residues) &#8599;' : 'LIVIA (scores) &#8599;');
+    const _tip = r.positive ? 'Open 3D structures, PAE maps, contact maps, and per-model scores in LIVIA'
+      : (r.iLIS_best > 0 ? 'Open per-model scores and predicted interaction residues (LIR/cLIR) in LIVIA'
+                         : 'Open per-model scores in LIVIA (no interface residues predicted)');
+    const cell = r.bundle
+      ? `<a href="${LIVIA}?data=${encodeURIComponent(BUNDLES+r.bundle)}&name=${encodeURIComponent(r.protein_1+'-'+r.protein_2)}" target="_blank" rel="noopener" title="${_tip}">${_txt}</a>`
+      : '<span class="dash">&mdash;</span>';
+    return `<tr class="${r.positive?'':'neg'}">
+      <td class="grp hide-s col-screen">${esc(r.screen)}</td>
+      <td class="gene">${esc(r.protein_1)}</td><td class="gene">${esc(r.protein_2)}</td>
+      <td class="num ilis ${bandBest(r.iLIS_best)}">${r.iLIS_best.toFixed(3)}</td>
+      <td class="num ilis ${bandAvg(r.iLIS_avg)}">${r.iLIS_avg.toFixed(3)}</td>
+      <td class="num">${r.ipTM_best.toFixed(2)}</td><td class="num">${r.ipTM_avg.toFixed(2)}</td>
+      ${extraCells(r)}<td class="stk">${cell}</td></tr>`;
+  }).join('') : `<tr><td colspan="8" class="empty">Nothing matches the current filters.</td></tr>`;
+  document.querySelectorAll('#tbl th[data-k]').forEach(th=>{
+    if(th.dataset.k===sortK) th.setAttribute('aria-sort', sortAsc?'ascending':'descending');
+    else th.removeAttribute('aria-sort');
+  });
+  tabCounts();
+}
+function tabCounts(){
+  const n=q.trim().toUpperCase();
+  document.querySelectorAll('#tabs .tab').forEach(b=>{
+    const s=b.dataset.s;
+    const c=ROWS.filter(r=>(s==='all'||r.screen===s)&&passCut(r)&&matchQ(r,n)).length;
+    b.querySelector('.n').textContent=c.toLocaleString();
+  });
+}
+function tabs(){
+  if (SCREENS.length < 2) document.body.classList.add('one-screen');
+  const mk=(v,l)=>`<button class="tab" role="tab" data-s="${v}" aria-selected="${screen_===v}">${l}<span class="n"></span></button>`;
+  document.getElementById('tabs').innerHTML = mk('all','All') + SCREENS.map(s=>mk(s,s)).join('');
+  document.querySelectorAll('#tabs .tab').forEach(b=>b.onclick=()=>{
+    screen_=b.dataset.s;
+    document.querySelectorAll('#tabs .tab').forEach(x=>x.setAttribute('aria-selected',x.dataset.s===screen_));
+    render();
+  });
+}
+document.getElementById('cut').addEventListener('change',e=>{cut=+e.target.value;render();});
+document.getElementById('q').addEventListener('input',e=>{q=e.target.value;render();});
+document.querySelectorAll('#tbl th[data-k]').forEach(th=>th.onclick=()=>{
+  const k=th.dataset.k;
+  sortAsc = (k===sortK) ? !sortAsc : !NUM.has(k);
+  sortK=k; render();
+});
+
+// ?v= defeats the browser cache: the CSV path never changes, so a stale copy from an older
+// deploy (different columns) would otherwise be reused and silently mis-render every row.
+fetch('data/interactions.csv?v=dcba94b0ce').then(r=>r.text()).then(t=>{
+  ROWS=parseCSV(t).map(r=>{
+    const o={...r, iLIS_best:+r.iLIS_best, iLIS_avg:+r.iLIS_avg,
+             ipTM_best:+r.ipTM_best, ipTM_avg:+r.ipTM_avg};
+    o.positive = ge(o.iLIS_best, 0.223) ? 1 : 0;   // derived, never trusted from the file
+    return o;
+  });
+  tabs(); render();
+}).catch(e=>{
+  document.querySelector('#tbl tbody').innerHTML =
+    `<tr><td colspan="8" class="empty">Could not load data/interactions.csv &mdash; ${esc(e.message)}</td></tr>`;
+});
+</script>
+</body>
+</html>
